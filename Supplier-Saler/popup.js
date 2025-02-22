@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const domain = url.hostname;
 
     // 根据域名和URL参数设置按钮状态
-    if (domain === 'detail.1688.com' && url.search.includes('sk=consign')) {
+    if (domain === 'detail.1688.com' && !url.search.includes('sk=consign')) {
       addSupplierButton.disabled = false;
     } else {
       addSupplierButton.disabled = true;
@@ -18,41 +18,69 @@ document.addEventListener('DOMContentLoaded', function () {
     addSupplierButton.addEventListener('click', function () {
       if (!addSupplierButton.disabled) {
         fetch(url)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then((html) => {
-          // 查找 "skuModel" 和 "offerBaseInfo" 之间的内容
-          const skuModelIndex = html.indexOf('"skuModel":');
-          if (skuModelIndex === -1) {
-            alert('未找到 skuModel');
-            return;
-          }
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+          })
+          .then((html) => {
+            // 提取 "skuModel" 的内容
+            const skuModelIndex = html.indexOf('"skuModel":');
+            let skuModel = null;
+            if (skuModelIndex !== -1) {
+              const offerBaseInfoIndex = html.indexOf('"offerBaseInfo"', skuModelIndex);
+              if (offerBaseInfoIndex !== -1) {
+                skuModel = html.substring(
+                  skuModelIndex + '"skuModel":'.length,
+                  offerBaseInfoIndex
+                ).trim();
+              }
+            }
 
-          const offerBaseInfoIndex = html.indexOf('"offerBaseInfo"', skuModelIndex);
-          if (offerBaseInfoIndex === -1) {
-            alert('未找到 offerBaseInfo');
-            return;
-          }
+            // 提取 "tempModel" 的内容
+            const tempModelIndex = html.indexOf('"tempModel":');
+            let tempModel = null;
+            if (tempModelIndex !== -1) {
+              const isSourcePromotionIndex = html.indexOf('"isSourcePromotion"', tempModelIndex);
+              if (isSourcePromotionIndex !== -1) {
+                tempModel = html.substring(
+                  tempModelIndex + '"tempModel":'.length,
+                  isSourcePromotionIndex
+                ).trim();
+              }
+            }
 
-          // 提取 "skuModel" 和 "offerBaseInfo" 之间的内容
-          const extractedContent = html.substring(
-            skuModelIndex + '"skuModel":'.length,
-            offerBaseInfoIndex
-          );
+            // 提取 "orderParamModel" 的内容
+            const orderParamModelIndex = html.indexOf('"orderParamModel":');
+            let orderParamModel = null;
+            if (orderParamModelIndex !== -1) {
+              const qrCodeIndex = html.indexOf('"qrCode"', orderParamModelIndex);
+              if (qrCodeIndex !== -1) {
+                orderParamModel = html.substring(
+                  orderParamModelIndex + '"orderParamModel":'.length,
+                  qrCodeIndex
+                ).trim();
+              }
+            }
 
-          // 展示提取的内容
-          alert(`URL: ${url}, 提取的内容:\n${extractedContent.trim().substring(0, extractedContent.length - 1)}`);
-        })
-        .catch((error) => {
-          console.error('请求失败:', error);
-          alert('请求失败，请检查控制台日志。');
-        });
+            // 组装结果为 JSON 字符串
+            const result = {
+              url: url.href,
+              skuModel: skuModel.substring(0, skuModel.length - 1),
+              tempModel: tempModel.substring(0, tempModel.length - 1),
+              orderParamModel: orderParamModel.substring(0, orderParamModel.length - 1),
+            };
+
+            // 展示结果
+            console.log(JSON.stringify(result, null, 2));
+            alert(`提取的内容:\n${JSON.stringify(result, null, 2)}`);
+          })
+          .catch((error) => {
+            console.error('请求失败:', error);
+            alert('请求失败，请检查控制台日志。');
+          });
       }
     });
   });
 });
-
