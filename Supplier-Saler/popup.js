@@ -1,3 +1,7 @@
+const config = {
+  apiDomain: 'http://localhost:8080', // 替换为实际的API域名
+};
+
 document.addEventListener('DOMContentLoaded', function () {
   const addSupplierButton = document.getElementById('addSupplier');
 
@@ -75,6 +79,31 @@ document.addEventListener('DOMContentLoaded', function () {
             // 展示结果
             console.log(JSON.stringify(result, null, 2));
             alert(`提取的内容:\n${JSON.stringify(result, null, 2)}`);
+
+            // === 新增代码：发送“新增原始产品供应源”HTTP请求 ===
+            const apiUrl = `${config.apiDomain}/api/supplier/raw`;
+
+            fetch(apiUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                url: result.url,
+                content: JSON.stringify(result),
+              }),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                alert('新增原始产品供应源成功！');
+              })
+              .catch((error) => {
+                console.error('新增原始产品供应源失败:', error);
+                alert('新增原始产品供应源失败，请检查控制台日志。');
+              });
           })
           .catch((error) => {
             console.error('请求失败:', error);

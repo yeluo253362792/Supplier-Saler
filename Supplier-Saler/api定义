@@ -1,0 +1,16 @@
+- **新增原始产品供应源**：`POST /api/supplier/raw`
+    - 请求参数：
+      ```json
+      {
+        "url": "string",
+        "content": "string"
+      }
+      ```
+    - 响应：
+      ```json
+      {
+        "id": "string",
+        "url": "string",
+        "content": "string"
+      }
+      ```
