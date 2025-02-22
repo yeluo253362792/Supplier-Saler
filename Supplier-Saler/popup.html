@@ -42,10 +42,53 @@
       transform: none;
       box-shadow: none;
     }
+
+    /* 提示框样式 */
+    #messageBox {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+      z-index: 1000;
+    }
+
+    #messageContent {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #closeMessage {
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    #closeMessage:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <button id="addSupplier">Add Supplier</button>
+
+  <!-- 提示框 -->
+  <div id="messageBox">
+    <p id="messageContent">Supplier added successfully!</p>
+    <button id="closeMessage">Close</button>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

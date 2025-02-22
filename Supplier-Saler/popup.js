@@ -4,6 +4,10 @@ const config = {
 
 document.addEventListener('DOMContentLoaded', function () {
   const addSupplierButton = document.getElementById('addSupplier');
+  const messageBox = document.getElementById('messageBox');
+  const messageContent = document.getElementById('messageContent');
+  const closeMessageButton = document.getElementById('closeMessage');
+
 
   // 获取当前活动标签页的URL
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -78,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 展示结果
             console.log(JSON.stringify(result, null, 2));
-            alert(`提取的内容:\n${JSON.stringify(result, null, 2)}`);
 
             // === 新增代码：发送“新增原始产品供应源”HTTP请求 ===
             const apiUrl = `${config.apiDomain}/api/supplier/raw`;
@@ -98,18 +101,25 @@ document.addEventListener('DOMContentLoaded', function () {
                   throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                alert('新增原始产品供应源成功！');
+                messageContent.textContent = '新增原始产品供应源成功！';
+                messageBox.style.display = 'block';
               })
               .catch((error) => {
                 console.error('新增原始产品供应源失败:', error);
-                alert('新增原始产品供应源失败，请检查控制台日志。');
+                messageContent.textContent = '新增原始产品供应源失败！';
+                messageBox.style.display = 'block';
               });
           })
           .catch((error) => {
             console.error('请求失败:', error);
-            alert('请求失败，请检查控制台日志。');
+            messageContent.textContent = '请求失败！';
+            messageBox.style.display = 'block';
           });
       }
+    });
+
+    closeMessageButton.addEventListener('click', () => {
+      messageBox.style.display = 'none';
     });
   });
 });
